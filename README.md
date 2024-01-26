@@ -1,3 +1,6 @@
+this is a local docker registry deployment configuration for k8s
+
+
 ### Deployment
 
 1. create a namespace
