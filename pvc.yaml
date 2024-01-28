@@ -10,4 +10,5 @@ spec:
   resources:
     requests:
       storage: 50Gi
-  storageClassName: csi-cinder-classic
+  storageClassName: manual
+  

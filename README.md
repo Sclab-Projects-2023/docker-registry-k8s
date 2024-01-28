@@ -3,20 +3,12 @@ this is a local docker registry deployment configuration for k8s
 
 ### Deployment
 
-1. create a namespace
-```
-kubectl apply -f namespace.yaml  
-```
-2. create a PVC
-```
-kubectl apply -f pvc.yaml  
-```
-3. deploy
 ```
 kubectl apply -f deployment.yaml  
 ```
 
 ### Run
+this docker-registry can be accessed thro localhost:31313 by default
 
 1. port forwarding 5000
 ```

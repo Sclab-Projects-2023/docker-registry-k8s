@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: docker-registry
+  namespace: docker-registry
+spec:
+  volumes:
+  - name: docker-registry-pv-storage
+    persistentVolumeClaim:
+      claimName: docker-registry-pv-claim

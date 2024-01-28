@@ -1,13 +1,50 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: docker-registry
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: docker-registry-pv
+  namespace: docker-registry
+  labels:
+    type: local
+spec:
+  storageClassName: manual-registry
+  persistentVolumeReclaimPolicy: Delete
+  capacity:
+    storage: 60Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/opt/registry"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: docker-registry-pv-claim
+  namespace: docker-registry
+spec:
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: manual-registry
+  
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: docker-registry
   namespace: docker-registry
 spec:
-  volumes:
-  - name: docker-registry-pv-storage
-    persistentVolumeClaim:
-      claimName: docker-registry-pv-claim
   selector:
     matchLabels:
       app: docker-registry
@@ -16,6 +53,10 @@ spec:
       labels:
         app: docker-registry
     spec:
+      volumes:
+      - name: docker-registry-pv-storage
+        persistentVolumeClaim:
+          claimName: docker-registry-pv-claim
       containers:
       - name: docker-registry
         image: registry
@@ -26,5 +67,25 @@ spec:
         ports:
         - containerPort: 5000
         volumeMounts:
-        - mountPath: "/var/lib/registry/"
-          name: task-pv-storage
+        - mountPath: "/var/lib/registry"
+          name: docker-registry-pv-storage
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry-svc
+  namespace: docker-registry
+spec:
+  type: NodePort
+  selector:
+    app: docker-registry
+  ports:
+    - name: registry
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 31313
+    
